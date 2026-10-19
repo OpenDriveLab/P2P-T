@@ -1,0 +1,39 @@
+# Fill this manifest when publishing weights and preprocessing outputs.
+version: 1.0.0
+source_paper: attached P2P-T paper (external reference)
+
+stage1_preprocess:
+  status: pending
+  dataset_root:
+  manifest:
+  foundation_models:
+    grounded_sam_revision:
+    sam3d_revision:
+    foundationpose_revision:
+  accepted_clips:
+  rejected_clips:
+  sha256:
+
+stage1_checkpoint:
+  status: pending
+  uri:
+  sha256:
+  config: stage1/config/stage1.yaml
+  future_steps: 8
+  metrics:
+    val_pose_loss:
+    val_frame_loss:
+
+stage2_checkpoint:
+  status: pending
+  uri:
+  sha256:
+  config: configs/ur10e_p2p_t.yaml
+  base_rdt_checkpoint:
+  stage1_checkpoint:
+  robot: ur10e
+  action_chunk_size: 64
+  metrics:
+    average_success:
+    inference_hz:
+

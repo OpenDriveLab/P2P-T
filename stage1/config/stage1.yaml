@@ -1,0 +1,87 @@
+# Configuration for the Stage 1 pose prediction model.
+
+data:
+  path: data/stage1_data/parsed_taco_data
+  val_split: 0.1
+  # Number of future tool states/frames predicted by the object-centric world model.
+  future_steps: 8
+  prediction_target: next_pose  # options: next_pose, target_pose, delta_pose
+  recipe:
+    sequence_globs: ["seq_*"]
+    pose_filenames: ["tool_poses.pkl"]
+    image_dirs: ["rgb"]
+    image_globs: ["*.png", "*.jpg", "*.jpeg"]
+    image_filename_format: "{frame_idx:06d}.png"
+    frame_stride: 1
+
+model:
+  embed_dim: 2048
+  num_heads: 16
+  num_layers: 8
+  feedforward_mult: 8
+  num_fusion_tokens: 32
+  image_feature_dim: 1536
+  language_feature_dim: 768
+  pose_dim: 16
+  future_steps: 8
+  frame_loss_weight: 0.01
+  dino_repo: facebookresearch/dinov2
+  dino_model_name: dinov2_vitb14_reg
+  siglip_model_name: google/siglip-base-patch16-224
+  text_model_name: t5-base
+  freeze_backbones: true
+  cache_language_embeddings: true
+
+training:
+  batch_size: 64
+  epochs: 20
+  learning_rate: 0.00015
+  weight_decay: 0.0001
+  lr_scheduler: constant  # options: constant, cosine
+  lr_warmup_steps: 0
+  devices: 1  # set to an integer >1, a list like [0,1], "0,1", or "auto" for multi-GPU
+  num_nodes: 1
+  strategy: auto  # use "ddp" for multi-GPU training
+  sync_batchnorm: false
+  num_workers: 24
+  prefetch_factor: 4
+  persistent_workers: true
+  pin_memory: true
+  sharing_strategy: file_system
+  seed: 42
+  deterministic: false
+  log_every_n_steps: 10
+  checkpoint_dir: checkpoints/stage1
+  checkpoint_name_params:
+    - data.prediction_target
+    - training.batch_size
+    - training.learning_rate
+    - model.embed_dim
+    - model.num_layers
+    - model.num_heads
+  checkpoint_every_n_epochs: 5
+  checkpoint_save_top_k: -1
+  save_last_checkpoint: true
+  resume: false
+  resume_checkpoint_path: null  # file or directory; --resume-from overrides this
+  resume_checkpoint_dir: null   # defaults to training.checkpoint_dir
+  resume_checkpoint_name: last.ckpt
+  accumulate_grad_batches: 1
+  gradient_clip_val: 0.0
+  precision: 32
+  matmul_precision: high
+  cudnn_benchmark: true
+  check_val_every_n_epoch: 5
+
+logging:
+  use_wandb: true
+  project: trustworthy_tool_manip
+  run_name: stage1_transformer_training
+  save_dir: logs
+  mode: online
+
+inference:
+  checkpoint_dir: checkpoints/stage1
+  checkpoint_name: last.ckpt
+  model_dtype: float32
+  autocast_dtype: null

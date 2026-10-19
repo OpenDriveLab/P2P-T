@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Pose-conditioned RDT DiT action token flow</title>
+  <desc id="desc">Diagram showing language, image, pose, state, and noisy action tokens flowing into fine-tuned RDT DiT action blocks conditioned by a pose token.</desc>
+  <defs>
+    <marker id="arrow-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#263238"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2F6FED"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1E8A5A"/>
+    </marker>
+    <style>
+      .bg { fill: #F7F8FA; }
+      .panel { fill: #FFFFFF; stroke: #D9DEE7; stroke-width: 2; rx: 18; }
+      .panel-soft { fill: #FDFEFE; stroke: #E4E8F0; stroke-width: 2; rx: 16; }
+      .title { font: 700 38px Arial, Helvetica, sans-serif; fill: #17202A; }
+      .subtitle { font: 400 18px Arial, Helvetica, sans-serif; fill: #52616D; }
+      .h2 { font: 700 22px Arial, Helvetica, sans-serif; fill: #17202A; }
+      .label { font: 700 17px Arial, Helvetica, sans-serif; fill: #17202A; }
+      .small { font: 400 15px Arial, Helvetica, sans-serif; fill: #52616D; }
+      .tiny { font: 400 13px Arial, Helvetica, sans-serif; fill: #5E6B76; }
+      .note { font: 700 14px Arial, Helvetica, sans-serif; fill: #FFFFFF; }
+      .token-text { font: 700 15px Arial, Helvetica, sans-serif; fill: #17202A; }
+      .token-blue { fill: #DCE8FF; stroke: #2F6FED; stroke-width: 2; rx: 9; }
+      .token-teal { fill: #DDF5ED; stroke: #1E8A5A; stroke-width: 2; rx: 9; }
+      .token-amber { fill: #FFF0C9; stroke: #C27A00; stroke-width: 2; rx: 9; }
+      .token-rose { fill: #FFE1E7; stroke: #D83F63; stroke-width: 2; rx: 9; }
+      .token-gray { fill: #EEF1F5; stroke: #7B8794; stroke-width: 2; rx: 9; }
+      .token-violet { fill: #EAE3FF; stroke: #6B4FD6; stroke-width: 2; rx: 9; }
+      .block { fill: #F4F7FB; stroke: #AAB4C0; stroke-width: 2; rx: 12; }
+      .block-train { fill: #FFFFFF; stroke: #2F6FED; stroke-width: 3; rx: 14; }
+      .dash-blue { fill: none; stroke: #2F6FED; stroke-width: 3; stroke-dasharray: 8 8; }
+      .arrow { fill: none; stroke: #263238; stroke-width: 3; marker-end: url(#arrow-ink); }
+      .arrow-blue { fill: none; stroke: #2F6FED; stroke-width: 3; marker-end: url(#arrow-blue); }
+      .arrow-green { fill: none; stroke: #1E8A5A; stroke-width: 3; marker-end: url(#arrow-green); }
+      .thin { stroke-width: 2.4; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="900"/>
+
+  <text class="title" x="70" y="72">Pose-conditioned fine-tuning of RDT DiT action blocks</text>
+  <text class="subtitle" x="72" y="106">Pose tokens are inserted into the denoising token stream, then the RDT DiT blocks predict clean action tokens under language and image conditions.</text>
+
+  <rect class="panel" x="60" y="140" width="410" height="520"/>
+  <text class="h2" x="92" y="182">Condition sources</text>
+
+  <rect class="token-blue" x="95" y="220" width="150" height="54"/>
+  <text class="token-text" x="122" y="253">language</text>
+  <text class="small" x="266" y="241">T5 tokens</text>
+  <text class="tiny" x="266" y="262">instruction embedding</text>
+
+  <rect class="token-teal" x="95" y="315" width="150" height="54"/>
+  <text class="token-text" x="132" y="348">images</text>
+  <text class="small" x="266" y="336">SigLIP tokens</text>
+  <text class="tiny" x="266" y="357">multi-view history</text>
+
+  <rect class="token-rose" x="95" y="410" width="150" height="54"/>
+  <text class="token-text" x="128" y="443">target pose</text>
+  <text class="small" x="266" y="431">pose + mask</text>
+  <text class="tiny" x="266" y="452">Stage-1 or provided pose</text>
+
+  <rect class="token-amber" x="95" y="505" width="150" height="54"/>
+  <text class="token-text" x="129" y="538">state</text>
+  <text class="small" x="266" y="526">qpos + mask</text>
+  <text class="tiny" x="266" y="547">current robot state</text>
+
+  <rect class="token-gray" x="95" y="600" width="150" height="54"/>
+  <text class="token-text" x="112" y="633">noisy action</text>
+  <text class="small" x="266" y="621">x<tspan baseline-shift="sub" font-size="11">t</tspan> + action mask</text>
+  <text class="tiny" x="266" y="642">diffusion step input</text>
+
+  <rect class="panel" x="535" y="140" width="420" height="520"/>
+  <text class="h2" x="567" y="182">Token adaptation and concatenation</text>
+
+  <rect class="block" x="585" y="220" width="250" height="58"/>
+  <text class="label" x="622" y="245">language adaptor</text>
+  <text class="tiny" x="632" y="266">project to DiT hidden size</text>
+
+  <rect class="block" x="585" y="315" width="250" height="58"/>
+  <text class="label" x="642" y="340">image adaptor</text>
+  <text class="tiny" x="632" y="361">project to DiT hidden size</text>
+
+  <rect class="block-train" x="585" y="410" width="250" height="58"/>
+  <text class="label" x="609" y="435">target pose adaptor</text>
+  <text class="tiny" x="624" y="456">learned pose condition token</text>
+  <rect x="768" y="398" width="88" height="26" rx="13" fill="#2F6FED"/>
+  <text class="note" x="788" y="416">fine-tuned</text>
+
+  <rect class="block" x="585" y="505" width="250" height="58"/>
+  <text class="label" x="647" y="530">state adaptor</text>
+  <text class="tiny" x="622" y="551">state token in hidden space</text>
+
+  <rect class="block" x="585" y="600" width="250" height="58"/>
+  <text class="label" x="642" y="625">action adaptor</text>
+  <text class="tiny" x="616" y="646">masked noisy action tokens</text>
+
+  <path class="arrow thin" d="M 245 247 C 395 247, 445 247, 575 247"/>
+  <path class="arrow-green thin" d="M 245 342 C 395 342, 445 342, 575 342"/>
+  <path class="arrow-blue thin" d="M 245 437 C 395 437, 445 437, 575 437"/>
+  <path class="arrow thin" d="M 245 532 C 395 532, 445 532, 575 532"/>
+  <path class="arrow thin" d="M 245 627 C 395 627, 445 627, 575 627"/>
+
+  <rect class="panel-soft" x="535" y="705" width="420" height="115"/>
+  <text class="label" x="565" y="740">Denoising stream assembled each diffusion step</text>
+  <rect class="token-violet" x="568" y="766" width="68" height="34"/>
+  <text class="tiny" x="583" y="788">t</text>
+  <rect class="token-violet" x="646" y="766" width="68" height="34"/>
+  <text class="tiny" x="667" y="788">freq</text>
+  <rect class="token-rose" x="724" y="766" width="68" height="34"/>
+  <text class="tiny" x="742" y="788">pose</text>
+  <rect class="token-amber" x="802" y="766" width="68" height="34"/>
+  <text class="tiny" x="820" y="788">state</text>
+  <rect class="token-gray" x="880" y="766" width="42" height="34"/>
+  <text class="tiny" x="895" y="788">a1</text>
+  <rect class="token-gray" x="930" y="766" width="42" height="34"/>
+  <text class="tiny" x="945" y="788">a2</text>
+  <text class="small" x="978" y="789">...</text>
+
+  <rect class="panel" x="1020" y="140" width="510" height="520"/>
+  <text class="h2" x="1052" y="182">RDT DiT action blocks</text>
+  <text class="small" x="1053" y="210">Fine-tune the DiT blocks on the pose-conditioned action stream.</text>
+
+  <rect class="block-train" x="1085" y="245" width="370" height="250"/>
+  <rect x="1118" y="277" width="310" height="54" rx="12" fill="#EEF5FF" stroke="#2F6FED" stroke-width="2"/>
+  <text class="label" x="1187" y="311">self-attention over</text>
+  <text class="tiny" x="1162" y="326">[pose, state, noisy action tokens]</text>
+
+  <rect x="1118" y="355" width="310" height="54" rx="12" fill="#F0FBF6" stroke="#1E8A5A" stroke-width="2"/>
+  <text class="label" x="1164" y="389">cross-attend image tokens</text>
+
+  <rect x="1118" y="433" width="310" height="54" rx="12" fill="#EEF5FF" stroke="#2F6FED" stroke-width="2"/>
+  <text class="label" x="1150" y="467">cross-attend language tokens</text>
+
+  <rect x="1350" y="232" width="120" height="30" rx="15" fill="#2F6FED"/>
+  <text class="note" x="1372" y="252">fine-tuned</text>
+
+  <path class="dash-blue" d="M 1068 228 H 1472 V 512 H 1068 Z"/>
+  <text class="tiny" x="1132" y="532">pose token changes the action-token context at every denoising block</text>
+
+  <rect class="block" x="1085" y="575" width="370" height="58"/>
+  <text class="label" x="1166" y="600">final action head</text>
+  <text class="tiny" x="1155" y="621">predict denoised action tokens</text>
+
+  <path class="arrow-blue" d="M 835 437 C 930 437, 965 355, 1074 355"/>
+  <path class="arrow" d="M 835 532 C 930 532, 965 390, 1074 390"/>
+  <path class="arrow" d="M 835 627 C 935 627, 964 425, 1074 425"/>
+  <path class="arrow-green" d="M 835 344 C 940 344, 965 382, 1108 382"/>
+  <path class="arrow-blue" d="M 835 249 C 940 249, 965 460, 1108 460"/>
+  <path class="arrow-blue" d="M 1268 495 V 565"/>
+
+  <rect class="panel-soft" x="1048" y="705" width="482" height="115"/>
+  <text class="label" x="1078" y="740">Output</text>
+  <rect class="token-gray" x="1078" y="766" width="66" height="34"/>
+  <text class="tiny" x="1095" y="788">a1</text>
+  <rect class="token-gray" x="1154" y="766" width="66" height="34"/>
+  <text class="tiny" x="1171" y="788">a2</text>
+  <text class="small" x="1228" y="789">...</text>
+  <rect class="token-gray" x="1260" y="766" width="66" height="34"/>
+  <text class="tiny" x="1281" y="788">aH</text>
+  <text class="small" x="1350" y="789">clean action chunk</text>
+  <path class="arrow" d="M 1270 633 C 1270 676, 1270 696, 1270 756"/>
+
+  <rect x="70" y="705" width="395" height="115" rx="18" fill="#FFFFFF" stroke="#D9DEE7" stroke-width="2"/>
+  <text class="label" x="98" y="740">Legend</text>
+  <rect class="token-rose" x="100" y="762" width="38" height="24"/>
+  <text class="tiny" x="150" y="779">pose condition token</text>
+  <rect class="token-gray" x="100" y="797" width="38" height="24"/>
+  <text class="tiny" x="150" y="814">action-token diffusion stream</text>
+  <rect x="292" y="762" width="38" height="24" rx="8" fill="#FFFFFF" stroke="#2F6FED" stroke-width="3"/>
+  <text class="tiny" x="342" y="779">fine-tuned modules</text>
+  <line x1="292" y1="810" x2="330" y2="810" stroke="#1E8A5A" stroke-width="3" marker-end="url(#arrow-green)"/>
+  <text class="tiny" x="342" y="815">image conditioning</text>
+</svg>

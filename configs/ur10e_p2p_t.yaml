@@ -1,0 +1,45 @@
+# Release configuration for P2P-T on the UR10e embodiment.
+# Replace the checkpoint paths after publishing the corresponding artifacts.
+
+common:
+  img_history_size: 2
+  action_chunk_size: 64
+  num_cameras: 3
+  state_dim: 128
+
+dataset:
+  robot_data_root: data/datasets/hammer
+  epsd_len_thresh_low: 32
+  epsd_len_thresh_high: 2048
+  image_aspect_ratio: pad
+  tokenizer_max_length: 1024
+
+model:
+  lang_adaptor: mlp2x_gelu
+  img_adaptor: mlp2x_gelu
+  state_adaptor: mlp3x_gelu
+  target_pose_adaptor: mlp2x_gelu
+  lang_token_dim: 4096
+  img_token_dim: 1152
+  state_token_dim: 128
+  rdt:
+    hidden_size: 2048
+    depth: 28
+    num_heads: 32
+    cond_pos_embed_type: multimodal
+  noise_scheduler:
+    type: ddpm
+    num_train_timesteps: 1000
+    num_inference_timesteps: 5
+    beta_schedule: squaredcos_cap_v2
+    prediction_type: sample
+    clip_sample: false
+
+stage1:
+  enabled: true
+  config_path: stage1/config/stage1.yaml
+  checkpoint_path: /path/to/stage1/last.ckpt
+  checkpoint_dir:
+  checkpoint_name: last.ckpt
+  target_camera_index: 0
+
